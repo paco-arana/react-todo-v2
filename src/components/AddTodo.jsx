@@ -4,9 +4,11 @@ import { db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 
 const style = {
-  input: `border p-2 w-full rounded-md text-xl`,
-  button: `border p-2 w-full rounded-md text-xl bg-blue-400`,
-  close: `border p-2 w-full rounded-md text-xl bg-red-400`,
+  input: `border p-2 w-full rounded-md`,
+  button: `border p-2 w-full rounded-md bg-blue-400`,
+  close: `border p-2 w-full rounded-md bg-red-400`,
+  background: `z-40 fixed top-0 left-0 h-full w-screen bg-opacity-75 bg-slate-400`,
+  form: `z-50 relative`,
 };
 
 const AddTodo = () => {
@@ -38,57 +40,59 @@ const AddTodo = () => {
   return (
     <div>
       {showForm ? (
-        <form onSubmit={createTodo} className={style.form}>
-          <div className="grid grid-cols-4 gap-4">
-            <div>
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className={style.input}
-                type="text"
-                placeholder="Add new..."
-              />
-            </div>
-            <div>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                id="priorityInput"
-                className={style.input}
-                placeholder="Select priority">
-                <option value="">Select priority...</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-
-            <div>
-              <input
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className={style.input}
-                type="date"
-                placeholder="Due date..."
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className={style.background}></div>
+          <form onSubmit={createTodo} className={style.form}>
+            <div className="grid grid-cols-4 gap-4">
               <div>
-                <button className={style.button}>Add</button>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className={style.input}
+                  type="text"
+                  placeholder="Add new..."
+                />
               </div>
               <div>
-                <button
-                  className={style.close}
-                  onClick={() => setShowForm(false)}>
-                  Cancel
-                </button>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  id="priorityInput"
+                  className={style.input}
+                  placeholder="Select priority">
+                  <option value="">Select priority...</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div>
+                <input
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className={style.input}
+                  type="date"
+                  placeholder="Due date..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <button className={style.button}>Add</button>
+                </div>
+                <div>
+                  <button
+                    className={style.close}
+                    onClick={() => setShowForm(false)}>
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <div>
             <button className={style.button} onClick={() => setShowForm(true)}>
               + Add New To Do

@@ -1,8 +1,8 @@
 import React from "react";
 
 const style = {
-  input: `border p-2 w-full rounded-md text-xl`,
-  button: `border p-2 w-full rounded-md text-xl bg-blue-400`,
+  input: `border p-2 w-full rounded-md`,
+  button: `border p-2 w-full rounded-md bg-blue-400`,
   form: `mb-4`,
 };
 
