@@ -49,11 +49,8 @@ function App() {
       completedCount > 0 ? totalTime / completedCount : 0;
     // 60,000 milliseconds in a minute
     const minutes = Math.floor(averageTimeInMilliSeconds / 60000);
-    const seconds = Math.floor(averageTimeInMilliSeconds % 60);
-    // Format in mm:ss and return
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
+    // Format in "mm" and return
+    return `${minutes.toString().padStart(2)}`;
   };
   const averageTimeAll = calculateAverageTime();
   const averageTimeLow = calculateAverageTime("Low");
@@ -105,6 +102,34 @@ function App() {
   };
 
   // Sort todos by priority
+  const sortByPriority = () => {
+    const sortedTodos = [...todos].sort((a, b) => {
+      const priorityValues = {
+        High: 3,
+        Medium: 2,
+        Low: 1,
+      };
+      // If there is no priority send it to the end of the list
+      const priorityA = priorityValues[a.priority] || 0;
+      const priorityB = priorityValues[b.priority] || 0;
+      return priorityB - priorityA;
+    });
+    setTodos(sortedTodos);
+  };
+
+  const sortByDate = () => {
+    const sortedTodos = [...todos].sort((a, b) => {
+      const dueDateToNumber = (date) => {
+        if (date === null) return 100000000; // If date is null send it to year 10,000
+        const [year, month, day] = date.toString().split("-");
+        return parseInt(year + month + day);
+      };
+      const dueDateA = dueDateToNumber(a.due);
+      const dueDateB = dueDateToNumber(b.due);
+      return dueDateA - dueDateB;
+    });
+    setTodos(sortedTodos);
+  };
 
   return (
     <div className={style.bg}>
@@ -124,10 +149,16 @@ function App() {
           <div className={style.todohead}>
             <strong>Task</strong>
           </div>
-          <div className={style.todohead} style={{ cursor: "pointer" }}>
+          <div
+            className={style.todohead}
+            onClick={sortByPriority}
+            style={{ cursor: "pointer" }}>
             <strong>Priority ↕️</strong>
           </div>
-          <div className={style.todohead} style={{ cursor: "pointer" }}>
+          <div
+            className={style.todohead}
+            onClick={sortByDate}
+            style={{ cursor: "pointer" }}>
             <strong>Due ↕️</strong>
           </div>
           <div className={style.todohead}>
