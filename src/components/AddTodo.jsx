@@ -11,30 +11,56 @@ const style = {
   form: `z-50 relative`,
 };
 
-const AddTodo = () => {
+// Helper function convert date string to int
+const convertDate = (dateString) => {
+  const dateWithoutDashes = dateString.replace(/-/g, "");
+  return parseInt(dateWithoutDashes, 10);
+};
+
+const AddTodo = ({ onClickButton }) => {
   const [showForm, setShowForm] = useState(false);
   const [input, setInput] = useState("");
   const [priority, setPriority] = useState("");
   const [dueDate, setDueDate] = useState("");
 
-  //  Create todo
-  const createTodo = async (e) => {
-    e.preventDefault(e);
-    if (input === "") {
-      alert("please enter a valid string");
-      return;
-    }
-    await addDoc(collection(db, "todos"), {
+  // Used to trigger fetchTodos after every todo is added
+  const handleButtonClick = () => {
+    // It used to be on the add button hence the name
+    onClickButton();
+  };
+
+  // Create todo
+  const createTodo = (e) => {
+    e.preventDefault();
+
+    const url = "http://localhost:9090/todos";
+    const requestBody = {
       text: input,
-      completed: false,
-      due: dueDate, // Include the due date in the new todo
-      priority: priority, // Include the priority in the new todo
-      start: Date.now(),
-    });
+      priority: parseInt(priority),
+      dueDate: convertDate(dueDate),
+    };
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response data
+        console.log(data);
+      })
+      .catch((error) => {
+        // Handle any errors that occur during the request
+        console.error(error);
+      });
     setInput("");
     setDueDate(null);
     setShowForm(false);
     setPriority(""); // Reset priority state after adding the todo
+    handleButtonClick();
   };
 
   return (
@@ -59,11 +85,11 @@ const AddTodo = () => {
                   onChange={(e) => setPriority(e.target.value)}
                   id="priorityInput"
                   className={style.input}
-                  placeholder="Select priority">
-                  <option value="">Select priority...</option>
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
+                  placeholder="Select priority...">
+                  <option value="0">Select priority...</option>
+                  <option value="1">Low</option>
+                  <option value="2">Medium</option>
+                  <option value="3">High</option>
                 </select>
               </div>
 

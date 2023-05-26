@@ -4,15 +4,33 @@ import Search from "./components/Search";
 import AddTodo from "./components/AddTodo";
 import Todo from "./components/Todo";
 
-import { db } from "./firebase";
-import { query, collection, onSnapshot } from "firebase/firestore";
-
 const style = {
   bg: `h-screen w-screen p-4 bg-gradient-to-b from-[dodgerblue] to-[white]`,
   container: `bg-opacity-75 bg-slate-100 w-10/12 m-auto rounded-md shadow-xl p-4 mb-4`,
   heading: `text-xl text-center mb-4`,
   todohead: `text-center mt-4 mb-4`,
   span: `ml-4`,
+};
+
+// Helper function to format the priority label
+const getPriorityLabel = (priority) => {
+  if (priority === 1) {
+    return "high";
+  } else if (priority === 2) {
+    return "medium";
+  } else if (priority === 3) {
+    return "low";
+  }
+};
+
+// Helper function to convert date to string format "YYYY-MM-DD"
+const formatDate = (dateInt) => {
+  const dateString = dateInt.toString();
+  const dateList = dateString.split("");
+  const year = `${dateList[0]}${dateList[1]}${dateList[2]}${dateList[3]}`;
+  const month = `${dateList[4]}${dateList[5]}`;
+  const day = `${dateList[6]}${dateList[7]}`;
+  return `${year} - ${month} - ${day}`;
 };
 
 function App() {
@@ -34,24 +52,7 @@ function App() {
   const [endDisplay, setEndDisplay] = useState(10);
 
   // Used to calculate average times:
-  const calculateAverageTime = (priority = "") => {
-    // Filter according to priority, include all if priority not given
-    const completedTodos = todos.filter(
-      (todo) =>
-        todo.completed && todo.time && (!priority || todo.priority === priority)
-    );
-    // Count to get average
-    const completedCount = completedTodos.length;
-    // Total in milliseconds
-    const totalTime = completedTodos.reduce((sum, todo) => sum + todo.time, 0);
-    // Average in milliseconds
-    const averageTimeInMilliSeconds =
-      completedCount > 0 ? totalTime / completedCount : 0;
-    // 60,000 milliseconds in a minute
-    const minutes = Math.floor(averageTimeInMilliSeconds / 60000);
-    // Format in "mm" and return
-    return `${minutes.toString().padStart(2)}`;
-  };
+  const calculateAverageTime = (priority = "") => {};
   const averageTimeAll = calculateAverageTime();
   const averageTimeLow = calculateAverageTime("Low");
   const averageTimeMedium = calculateAverageTime("Medium");
@@ -59,76 +60,36 @@ function App() {
 
   // Read todos from firebase
   useEffect(() => {
-    const q = query(collection(db, "todos"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      let todosArr = [];
-      querySnapshot.forEach((doc) => {
-        todosArr.push({ ...doc.data(), id: doc.id });
-      });
-      setTodos(todosArr);
-    });
-    return () => unsubscribe;
+    fetchTodos();
   }, []);
 
-  // Search todos
-  const searchTodos = (e) => {
-    e.preventDefault();
-    let filteredTodos = [...todos];
+  const fetchTodos = () => {
+    fetch("http://localhost:9090/todos")
+      .then((response) => response.json())
+      .then((data) => {
+        // Map the fetched data to the required format
+        const todos = data.map((task) => ({
+          id: task.id,
+          completed: task.completed,
+          text: task.text,
+          priority: getPriorityLabel(task.priority),
+          dueDate: formatDate(task.dueDate),
+          startDate: task.startDate,
+          endDate: task.endDate,
+        }));
 
-    // Filter by keywords
-    if (qkeywords.trim() !== "") {
-      filteredTodos = filteredTodos.filter((todo) =>
-        todo.text.toLowerCase().includes(qkeywords.toLowerCase())
-      );
-    }
-
-    // Filter by priority
-    if (qpriority !== "") {
-      filteredTodos = filteredTodos.filter(
-        (todo) => todo.priority === qpriority
-      );
-    }
-
-    // Filter by state
-    if (qstatus !== "") {
-      if (qstatus === "true") {
-        filteredTodos = filteredTodos.filter((todo) => todo.completed);
-      } else if (qstatus === "false") {
-        filteredTodos = filteredTodos.filter((todo) => !todo.completed);
-      }
-    }
-
-    setTodos(filteredTodos);
+        // Update the todos state with the parsed data
+        setTodos(todos);
+      })
+      .catch((error) => {
+        // Handle any errors that occur during the request
+        console.error(error);
+      });
   };
 
-  // Sort todos by priority
-  const sortByPriority = () => {
-    const sortedTodos = [...todos].sort((a, b) => {
-      const priorityValues = {
-        High: 3,
-        Medium: 2,
-        Low: 1,
-      };
-      // If there is no priority send it to the end of the list
-      const priorityA = priorityValues[a.priority] || 0;
-      const priorityB = priorityValues[b.priority] || 0;
-      return priorityB - priorityA;
-    });
-    setTodos(sortedTodos);
-  };
-
-  const sortByDate = () => {
-    const sortedTodos = [...todos].sort((a, b) => {
-      const dueDateToNumber = (date) => {
-        if (date === null) return 100000000; // If date is null send it to year 10,000
-        const [year, month, day] = date.toString().split("-");
-        return parseInt(year + month + day);
-      };
-      const dueDateA = dueDateToNumber(a.due);
-      const dueDateB = dueDateToNumber(b.due);
-      return dueDateA - dueDateB;
-    });
-    setTodos(sortedTodos);
+  // Used to trigger fetchTodos from other files
+  const handleButtonClick = () => {
+    fetchTodos();
   };
 
   return (
@@ -142,22 +103,21 @@ function App() {
           setQPriority={setQPriority}
           qstatus={qstatus}
           setQStatus={setQStatus}
-          searchTodos={searchTodos}
         />
-        <AddTodo />
+        <AddTodo onClickButton={handleButtonClick} />
         <div className="grid grid-cols-4">
           <div className={style.todohead}>
             <strong>Task</strong>
           </div>
           <div
             className={style.todohead}
-            onClick={sortByPriority}
+            onClick={fetchTodos}
             style={{ cursor: "pointer" }}>
             <strong>Priority ↕️</strong>
           </div>
           <div
             className={style.todohead}
-            onClick={sortByDate}
+            onClick={fetchTodos}
             style={{ cursor: "pointer" }}>
             <strong>Due ↕️</strong>
           </div>
@@ -166,26 +126,11 @@ function App() {
           </div>
         </div>
         <div>
-          {todos.slice(startDisplay, endDisplay).map((todo, index) => (
+          {todos.map((todo, index) => (
             <Todo key={index} todo={todo} />
           ))}
         </div>
-
-        <div className="text-center">
-          <p>
-            Pages:
-            {[...Array(Math.ceil(todos.length / 10))].map((_, num) => (
-              // I know this line above looks ugly but I coded it by trial and error and don't want to touch it
-              <strong
-                className={style.span}
-                key={num}
-                onClick={() => handlePageClick(num)}
-                style={{ cursor: "pointer" }}>
-                {num + 1}
-              </strong>
-            ))}
-          </p>
-        </div>
+        <div className="text-center"></div>
       </div>
       <div className={style.container}>
         <h1 className={style.heading}>Time to Finish Tasks</h1>

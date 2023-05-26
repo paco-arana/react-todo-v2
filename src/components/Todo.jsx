@@ -82,10 +82,10 @@ const Todo = ({ todo }) => {
                 id="priorityInput"
                 className={style.input}
                 placeholder="Select priority">
-                <option value="">Change priority...</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="0">Change priority...</option>
+                <option value="3">Low</option>
+                <option value="2">Medium</option>
+                <option value="1">High</option>
               </select>
             </div>
 
@@ -128,10 +128,10 @@ const Todo = ({ todo }) => {
                 {todo.text}
               </p>
             </div>
+            <div className="text-center">{todo.priority}</div>
             <div className="text-center">
-              {todo.priority ? todo.priority : ""}
+              {todo.dueDate ? todo.dueDate : ""}
             </div>
-            <div className="text-center">{todo.due ? todo.due : ""}</div>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-right pr-4">
                 <button class={style.icon} onClick={() => setShowForm(true)}>
