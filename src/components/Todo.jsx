@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-
-import { db } from "../firebase";
-import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
 
 const style = {
   li: `justify-between bg-slate-200 p-1 my-2 capitalize`,
@@ -18,42 +15,127 @@ const style = {
   close: `border p-1 w-full rounded-md bg-red-400`,
 };
 
-const Todo = ({ todo }) => {
+// Helper function convert date string to int
+const convertDate = (dateString) => {
+  const dateWithoutDashes = dateString.replace(/-/g, "");
+  return parseInt(dateWithoutDashes, 10);
+};
+
+// Helper function to convert label back to int
+const getPriority = (priority) => {
+  if (priority === "high") {
+    return 1;
+  } else if (priority === "medium") {
+    return 2;
+  } else if (priority === "low") {
+    return 3;
+  }
+};
+
+const Todo = ({ todo, onClickButton }) => {
   const [showForm, setShowForm] = useState(false);
-  const [newPriority, setNewPriority] = useState("");
-  const [newDueDate, setNewDueDate] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newPriority, setNewPriority] = useState(3);
+  const [newDueDate, setNewDueDate] = useState("0");
+
+  useEffect(() => {
+    setNewName(todo.text);
+    setNewPriority(getPriority(todo.priority));
+    setNewDueDate("0");
+  }, [todo]);
+
+  // Used to trigger fetchTodos after modifying a todo is added
+  const handleButtonClick = () => {
+    onClickButton();
+  };
 
   // Mark todo as completed
-  const toggleComplete = async (id) => {
-    const todoSnapshot = await getDoc(doc(db, "todos", id));
-    const todoData = todoSnapshot.data();
+  const toggleComplete = async (e, id) => {
+    e.preventDefault();
+    let url = `http://localhost:9090/todos`;
+    const requestBody = {
+      id: id,
+    };
 
-    const completed = !todoData.completed;
-    const end = completed ? Date.now() : null;
-    const start = todoData.start;
-    const time = completed ? end - todoData.start : null;
+    // Decide if we should mark as done or undone
+    if (todo.completed === true) {
+      url += `/${id}/undone`;
+    } else if (todo.completed === false) {
+      url += `/${id}/done`;
+    }
 
-    await updateDoc(doc(db, "todos", id), {
-      completed: completed,
-      end: completed ? Date.now() : null,
-      start: start,
-      time: time,
-    });
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      handleButtonClick(); // Call handleButtonClick after the state is updated
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Edit todo
   const editTodo = async (id, e) => {
-    e.preventDefault(e);
-    await updateDoc(doc(db, "todos", id), {
-      priority: newPriority,
-      due: newDueDate,
-    });
-    setShowForm(false);
+    e.preventDefault();
+    let url = `http://localhost:9090/todos/${id}`;
+    const requestBody = {
+      text: newName,
+      priority: parseInt(newPriority),
+      dueDate: convertDate(newDueDate),
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      setShowForm(false);
+      handleButtonClick(); // Call handleButtonClick after the state is updated
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // Delete todo
-  const deleteTodo = async (id) => {
-    await deleteDoc(doc(db, "todos", id));
+  // Erase a Todo
+  const deleteTodo = async (e, id) => {
+    e.preventDefault();
+    let url = `http://localhost:9090/todos/${id}`;
+    const requestBody = {
+      id: id,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      // Fetch updated todos
+      handleButtonClick();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -61,19 +143,23 @@ const Todo = ({ todo }) => {
       {showForm ? (
         <form onSubmit={(e) => editTodo(todo.id, e)} className={style.form}>
           <div className="grid grid-cols-4 gap-4">
-            <div className={todo.completed ? style.nameComplete : style.name}>
+            <div className="flex">
               <div className={style.row}>
                 <input
-                  onChange={() => toggleComplete(todo.id)}
+                  className="mx-3"
+                  onChange={(e) => toggleComplete(e, todo.id)}
                   type="checkbox"
                   checked={todo.completed ? "checked" : ""}
                 />
-                <p
-                  onClick={() => toggleComplete(todo.id)}
-                  className={todo.completed ? style.textComplete : style.text}>
-                  {todo.text}
-                </p>
               </div>
+              <input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className={style.input}
+                type="text"
+                defaultValue={todo.text}
+                placeholder={todo.text}
+              />
             </div>
             <div>
               <select
@@ -82,10 +168,9 @@ const Todo = ({ todo }) => {
                 id="priorityInput"
                 className={style.input}
                 placeholder="Select priority">
-                <option value="">Change priority...</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="3">Low</option>
+                <option value="2">Medium</option>
+                <option value="1">High</option>
               </select>
             </div>
 
@@ -118,28 +203,33 @@ const Todo = ({ todo }) => {
           <div className="grid grid-cols-4 gap-4">
             <div className={style.row}>
               <input
-                onChange={() => toggleComplete(todo.id)}
+                onChange={(e) => toggleComplete(e, todo.id)}
                 type="checkbox"
                 checked={todo.completed ? "checked" : ""}
+                className="mx-2"
               />
               <p
-                onClick={() => toggleComplete(todo.id)}
+                onClick={(e) => toggleComplete(e, todo.id)}
                 className={todo.completed ? style.textComplete : style.text}>
                 {todo.text}
               </p>
             </div>
+            <div className="text-center">{todo.priority}</div>
             <div className="text-center">
-              {todo.priority ? todo.priority : ""}
+              {todo.dueDate !== "0" ? todo.dueDate : "No due date"}
             </div>
-            <div className="text-center">{todo.due ? todo.due : ""}</div>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-right pr-4">
-                <button class={style.icon} onClick={() => setShowForm(true)}>
+                <button
+                  className={style.icon}
+                  onClick={() => setShowForm(true)}>
                   Edit
                 </button>
               </div>
               <div>
-                <button class={style.icon} onClick={() => deleteTodo(todo.id)}>
+                <button
+                  className={style.icon}
+                  onClick={(e) => deleteTodo(e, todo.id)}>
                   Delete
                 </button>
               </div>
