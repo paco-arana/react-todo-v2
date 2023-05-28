@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 
-import { db } from "../firebase";
-import { collection, addDoc } from "firebase/firestore";
-
 const style = {
   input: `border p-2 w-full rounded-md`,
   button: `border p-2 w-full rounded-md bg-blue-400`,
@@ -13,6 +10,9 @@ const style = {
 
 // Helper function convert date string to int
 const convertDate = (dateString) => {
+  if (dateString === null || dateString === undefined || dateString === "0") {
+    return 0; // or any other default value you prefer
+  }
   const dateWithoutDashes = dateString.replace(/-/g, "");
   return parseInt(dateWithoutDashes, 10);
 };
@@ -20,17 +20,16 @@ const convertDate = (dateString) => {
 const AddTodo = ({ onClickButton }) => {
   const [showForm, setShowForm] = useState(false);
   const [input, setInput] = useState("");
-  const [priority, setPriority] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState(3);
+  const [dueDate, setDueDate] = useState("0");
 
   // Used to trigger fetchTodos after every todo is added
   const handleButtonClick = () => {
-    // It used to be on the add button hence the name
     onClickButton();
   };
 
   // Create todo
-  const createTodo = (e) => {
+  const createTodo = async (e) => {
     e.preventDefault();
 
     const url = "http://localhost:9090/todos";
@@ -40,27 +39,27 @@ const AddTodo = ({ onClickButton }) => {
       dueDate: convertDate(dueDate),
     };
 
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Handle the response data
-        console.log(data);
-      })
-      .catch((error) => {
-        // Handle any errors that occur during the request
-        console.error(error);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       });
-    setInput("");
-    setDueDate(null);
-    setShowForm(false);
-    setPriority(""); // Reset priority state after adding the todo
-    handleButtonClick();
+
+      const data = await response.json();
+      console.log(data);
+
+      setInput("");
+      setDueDate("0");
+      setShowForm(false);
+      setPriority(3);
+
+      handleButtonClick(); // Call handleButtonClick after the state is updated
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -86,10 +85,9 @@ const AddTodo = ({ onClickButton }) => {
                   id="priorityInput"
                   className={style.input}
                   placeholder="Select priority...">
-                  <option value="0">Select priority...</option>
-                  <option value="1">Low</option>
-                  <option value="2">Medium</option>
-                  <option value="3">High</option>
+                  <option value="3">Low Priority</option>
+                  <option value="2">Medium Priority</option>
+                  <option value="1">High Priority</option>
                 </select>
               </div>
 
