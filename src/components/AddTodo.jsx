@@ -23,7 +23,7 @@ const AddTodo = ({ onClickButton }) => {
   const [priority, setPriority] = useState(3);
   const [dueDate, setDueDate] = useState("0");
 
-  // Used to trigger fetchTodos after every todo is added
+  // Used to refresh Todos after every todo is added
   const handleButtonClick = () => {
     onClickButton();
   };
