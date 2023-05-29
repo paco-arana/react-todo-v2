@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Pico.CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+    <!-- Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title>Jose Arana Blog</title>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container">
+        <hgroup>
+          <h1>Apprenticeship Blog</h1>
+          <p class="titledark"><strong>by Jose Arana</strong></p>
+        </hgroup>
+      </div>
+    </header>
+    <main class="container">
+      <article>
+        <details open>
+          <summary>
+            <h3>Week 06: To-do Application Part 2</h3>
+            <p>
+              <strong
+                >(May 21- May 28) Frontend and Backend Development</strong
+              >
+            </p>
+          </summary>
+          <hr />
+          <p>
+            After one more week of work I got my java API up and running, like with the frontend the trick was to start by building the most basic implementation of a todo app posible, only including id, text and done/undone status. Once I built that and connected to it with Postman I could start iterating on it, adding the endpoints and all the attributes a todo had to have to be up to the project specifications.
+          </p>
+          <img src="./pictures/backend_model.png" alt="Model used for the todos">
+          <img src="./pictures/backend_running.png" alt="Backend running with spring boot">
+          <p>The frontend was updated as well to be in line with the specifications for the UI. Most of the functionality that was previously located in the frontend like sorting and filtering was moved to the backend, the only functionality of this type that remained coded in the frontend was the pagination control. I consider this to be the only real deviation from the project specifications, I have to be honest and say I simply didn't manage to move it to the backend without breaking basically everything in the frontend.</p>
+          <img src="./pictures/frontend_base.png" alt="View of the frontend on loading the app, some todos have been added for visualization">
+          <p>
+            Let's review the specifications for the UI:
+          </p>
+          <ol>
+            <li>
+              Search/Filtering Controls 
+            </li>
+            <li>
+              New To Do Button. This should open a modal to type the “to do” data. 
+            </li>
+            <li>
+              Priority column should show in the header the classic up and down arrows to allow the user to sort.
+            </li>
+            <li>
+              Due date column should show in the header the classic up and own arrows to allow the user to sort.
+            </li>
+            <li>
+              Action column to show actions (links/buttons) to allow the user to delete or edit a “to do”.
+            </li>
+            <li>
+              Pagination control. Showing the pages, its number and the next and previous page is enough. 
+            </li>
+            <li>
+              Area to show the metrics 
+            </li>
+          </ol>
+          <p>
+            I think it's all there, I might add a parenthesis on number 5: The full specifications said that we <em>could</em> use a modal similar to the one used to add a todo, in the case of editing I decided not to grey out the rest of the page, to make it faster if I chose to edit multiple todos at the same time. 
+          </p>
+          <p>
+            We'll look at some of this points closer as we walk through the backend specifications.
+          </p>
+          <h4>GET Endpoint</h4>
+          <p>The GET endpoint is by far the most complicated, as it has to handle sorting and search, a total of 4 request parameters. Despite this I think it's relatively straightforward and self-explaining, somments have been added to point what each section does:</p>
+          <img src="./pictures/backend_GET.png" alt="GET endpoint in Java backend">
+          <p>
+            In our app this endpoint is called to not only on loading or searching but basically anytime a todo is updated, marked as complete or added, as it's our means of updating the display of todos without resorting to refreshing the page.
+          </p>
+          <h4>POST Endpoint</h4>
+          <p>
+            The POST endpoint is set to receive a task object, it performs validations by making sure the received task has the bare minimum attributes required, a text field and a priority. In theory it is also impossible to submit an empty Todo from the frontend.
+          </p>
+          <img src="./pictures/backend_POST.png" alt="POST endpoint in Java backend">
+          <p>
+            As specified, the POST request is made when we click "Add" on our modal element. Priority is set to "Low" by default and the user is not given the choice to submit a todo without a priority.
+          </p>
+          <img src="./pictures/frontend_modal.png" alt="View of the modal element in frontend">
+          <h4>PUT Endpoints</h4>
+          <p>
+            There are actually three separate PUT requests that can be made to the API, one for the edit menu where we can change a todo's text, priority and due date, one for marking a todo as done, and a final one to mark a todo as undone. I personally would have preferred to use a single "toggle" endpoint to manage both done and undone states, but such was the specification.
+          </p>
+          <img src="./pictures/backend_PUT.png" alt="All three PUT endpoints in the API">
+          Each endpoint receives an ID in order to find the todo that is going to be updated. In the case of the updateTodo function we also receive a task object containing the new information, the same basic validations as in the createTodo function are also performed.
+          <img src="./pictures/frontend_edit.png" alt="Editing the todos from the frontend">
+          <h4>DELETE Endpoint</h4>
+          <p>
+            Something that was missing in the original specification was an endpoint in the API to delete todos, the especifications only said that we should have the means to do it but not how. If there was another way to achieve the same thing it didn't seem obvious to me.
+          </p>
+          <img src="./pictures/backend_DELETE.png" alt="The endpoint used to delete todos">
+          <h4>Conclusion</h4>
+          <p>It's hard for me to write a conclusion to this entry because there is still work left to do, namely implementing the tests. However speaking on the experience so far I have to say this project taught me to ask for help when stuck, I lost a good four days of progress just trying to figure out how to run the Java backend, when I finally decided to just ask someone we got the basics of the API done in about three hours. For the tests I'll go straight to the point and ask one of the other apprentices who has already implemented them in their apps.</p>
+          <hr />
+          <small>Uploaded on May 28, 2023</small>
+        </details>
+      </article>
+      <article>
+        <details open>
+          <summary>
+            <h3>Week 05: To-do Application Part 1</h3>
+            <p>
+              <strong
+                >(May 12- May 19) React Frontend Development</strong
+              >
+            </p>
+          </summary>
+          <hr />
+          <p>
+            With Ledger CLI behind us it seemed like things couldn't get much harder, looking back on it one week later that seems like a very optimistic view. Being objective the premise is much simpler, To-do apps are very common beginner projects, in essence it should be much simpler than the accounting tool that is Ledger:
+          </p>
+          <blockquote>
+            You are working with a client that needs to implement a to do list to help manage their tasks in their daily job. The client asked you to implement the following functionality: 
+          </blockquote>
+          <h4>Back End</h4>
+          <p>
+            The back end is proving to be the hardest to crack despite it only needing to handle a few requests. Personally I have no experience with Java, the language prescribed for the assignment, much less so with its related tools like Spring, Maven or Java Collections. To this we also have to add the technical issues caused by ZScaler, the company's VPN, for obvious security reasons it is particularly aggressive, which made it almost impossible to deploy locally for testing. Most of us had to resort to disabling during testing which is not an ideal solution.
+          </p>
+          <img src="./pictures/address_failure.png" alt="View of Intellij Idea failing to start the local servers">
+          <p>It took essentially the whole week to get a CRUD server to run, as once we had solved the ZScaler issue we still had to deal with the fiddly Maven installation process, the breaking changes that Spring 3.0 introduced that rendered most online guides useless and in my case my own lack of familiarity with backend development.</p>
+          <img src="./pictures/maven_win.png" alt="Maven failed to install manually or with brew, SDK ended up being the best way to install">
+          <h4>Front End</h4>
+          <p>The front end is where most of the functionality of the program is located, the specifications were that it had to be built using React, a javascript framework. I was already familiarized with react from previous projects, but still decided to use a tutorial for building the base of the project. Compared to the back end we advanced a great deal in the span of a couple of days, with most of the functionality implemented.</p>
+          <img src="./pictures/todo_chrome_one.png" alt="View of the React app as it stands right now">
+          <p>Due to being unable to get the back end running in a timely manner the app is currently running with a Firebase database, the functions that communicate with the database have been grouped together to make the change later to the local java backend</p>
+          <img src="./pictures/firebase_vscode.png" alt="Functions that pull data from Firebase">
+          <hr />
+          <small>Uploaded on May 21, 2023</small>
+        </details>
+      </article>
+      <article>
+        <details>
+          <summary>
+            <h3>Week 04: A Breakable Toy Experiment</h3>
+            <p>
+              <strong
+                >(Apr 25 - May 9) Individual console line application</strong
+              >
+            </p>
+          </summary>
+          <hr />
+          <p>
+            After delivering the team coding assignments we were given a new
+            task, we now had to recreate <em>Ledger</em> a CLI application for
+            accounting. The real <em>Ledger</em> is a very powerful and complete
+            tool, however, so in order to keep things reasonable we only had to
+            implement three commands and three flags. The commands given were
+            <strong>register, balance, and print.</strong> while the flags to
+            implement were
+            <strong>--sort, --file, and --price-db.</strong>
+          </p>
+          <h4>Command: register</h4>
+          <p>
+            The command <strong>register</strong> outputs a list of all the
+            transactions, formatted like a double entry accounting book. Going
+            left to right we have a date for the transaction, the accounts
+            involved, the value traded in the transaction and finally a running
+            balance, which is independent for each currency or symbol used.
+          </p>
+          <img src="./pictures/register.png" alt="output of register command">
+          <p>
+            In order to output the data in this format the code must read
+            through every filename specified in "index.ledger". Then parse every
+            entry contained in the files and append them to a dictionary. The
+            dictionary is formatted like a JSON so that it can be read by the
+            python library <em>Pandas</em> and turned into a dataframe. This was
+            done to facilitate the task of formatting the output, filtering and
+            sorting.
+          </p>
+          <img src="./pictures/entrymaker.png" alt="code used to parse through files">
+          <p>
+            By using the optional flag <strong>--account</strong> the table can
+            be narrowed down to only the transactions where the account
+            specified was involved. The choice was made to implement this
+            functionality as a flag instead of a positional attribute of
+            <strong>register</strong> because that was simpler to implement
+            using the argparse library.
+          </p>
+          <img src="./pictures/register_a.png" alt="output of register command when using account flag">
+          <h4>Command: balance</h4>
+          <p>
+            The command <strong>balance</strong>
+            outputs the total balance of all accounts. Because in the
+            <strong>register</strong> command we already have a running balance
+            column, we could reuse most of the code for register by moving it to
+            its own function. Then we simply use pandas to colapse the running
+            balance column, so we only keep the last value on it.
+          </p>
+          <img src="./pictures/balance_brain.png" alt="code used to create the balance output">
+          <p>
+            Like <strong>register</strong> this command could also make use of
+            the account flag to only show the total of the transactions
+            involving that account.
+          </p>
+          <img src="./pictures/balance_a.png" alt="output of balance command">
+          <h4>Command: print</h4>
+          <p>
+            The command <strong>print</strong> was to me the simplest one, as it
+            only needs to read through the ledger data and prints it out in an
+            homogenized format. I reused most of the code from the previous two
+            commands. As with both previous commands, <strong>print</strong> can make use
+            of the account flag to select which accounts to actually show.
+          </p>
+          <img src="./pictures/print.png" alt="output of print command">
+          <h4>Flag: --prices-db</h4>
+          <p>
+            The <strong>--prices-db</strong> flag does two things: It tells ledger that you want the output to show in a single currency, and in the specified file it lets you define what currency to output and what the exchange rate will be. Out of the optional flags this was the most involved one, so much that the code was split off for the register command, there is one version for its normal functioning and another for when this command is called.
+          </p>
+          <img src="./pictures/prices_code.png" alt="code used to change units and convert according to exchange rate">
+          <p>
+            Compare the output when the function is not called and when it is:
+          </p>
+          <img src="./pictures/prices_bal.png" alt="output of balance when using prices-database command">
+          <img src="./pictures/prices_reg.png" alt="output of register when using prices-database command">
+          <h4>Flag: --file</h4>
+          <p>
+            The <strong>--file</strong> flag specifies what file should be used as the index, the index.ledger text file contains the filenames of all entries for ledger. Being that ledger is originally an accounting tool, this could be considered a useful functionality to change between clients, for example. In the case of our implementation though we always default back to "index.ledger" when executing the code again. The implementation of this flag was very simple, we converted all references to index.ledger to variables and used an if statement to check if the flag was being passed as an argument.
+          </p>
+          <img src="./pictures/file_code.png" alt="if statement used to check if file was passed as an argument">
+          <h4>Flag: --sort</h4>
+          <p>
+            The <strong>--sort</strong> flag is used to sort the output, the real <em>Ledger</em> can take any EXPR as an argument, in our case we have only included "date" and variations as valid arguments.
+          </p>
+          <img src="./pictures/register_sorted.png" alt="register output sorted by date">
+          <h4>Conclusion</h4>
+          <p>
+            Ledger is one of the most complex programs that I've built on my own, if not the most complex. There was a moment when I felt like the complexity was too much to handle by myself. But as I powered through I found it really rewarding and by splitting my functions over many files I found it easier to keep track of everything.
+          </p>
+          <p>
+            I made many mistakes while building Ledger, I should've read more carefully what each function was supposed to do, as I found myself having to go back to tweak the code many times. However I don't regret starting to code without having the full picture, there was nothing i wrote that didn't come useful later, and I hold the belief that getting started is usually the most difficult part of any project.
+          </p>
+          <hr />
+          <small>Uploaded on May 9, 2023</small>
+        </details>
+      </article>
+      <article>
+        <details>
+          <summary>
+            <h3>Week 03: Come Together</h3>
+            <p>
+              <strong
+                >(Apr 14 - Apr 24) Individual and team coding
+                assignments</strong
+              >
+            </p>
+          </summary>
+          <hr />
+          <p>
+            The first couple of weeks in Encora were spent getting to know the
+            company and completing the prerequisite courses on matters of
+            diversity, communication and security. I can’t speak for everyone,
+            but I know at least I was excited to finally be back to coding after
+            what felt like a long break. The activities for the week seemed
+            simple enough: An individual problem and five team problems, but we
+            also had to balance building the foundations of our personal blog,
+            making the technical logs and unexpectedly, organizing newbie
+            Friday. This was quite the change from the leisurely pace of the
+            first couple of weeks.
+          </p>
+          <p>
+            I had a schedule carefully planned for the week, I’d solve the
+            individual challenge on the first couple of days, work with the team
+            on the team challenges through the next five days and use the
+            remaining time to build the blog, if I had enough time left over, I
+            would build the blog using Svelte as an SPA, otherwise I would use
+            pico.CSS to whip up something fast. You’re most likely looking at
+            that “something fast” right now.
+          </p>
+          <p>
+            It was a great plan, but in the words of Mike Tyson: Everyone has a
+            plan until they are punched in the face. In my case the punch was
+            called “Double or One Thing”.
+          </p>
+          <h4>Double or One Thing</h4>
+          <p>
+            We could pick one out of three options for our individual problem.
+            Double or One Thing seemed the obvious choice to me, if only because
+            I could understand what the problem was even asking for. The
+            descriptions for the Google Code Jam problems might as well be
+            written in a different language and deciphering them proved to be a
+            valuable skill on its own. To quote the problem intro:
+          </p>
+          <blockquote>
+            You are given a string of uppercase English letters. You can
+            highlight any number of the letters. Then, a new string is produced
+            by processing the letters from left to right: non-highlighted
+            letters are appended once to the new string, while highlighted
+            letters are appended twice. There are multiple strings that can be
+            obtained as a result of this process, depending on the highlighting
+            choices. Among all of those strings, output the one that appears
+            first in alphabetical order.
+          </blockquote>
+          <p>
+            To tackle this problem, we are given two options. The first option
+            was a brute force solution that writes every possible combination of
+            single and double letters to a list, sorts the list, and picks the
+            first element. This was simple enough to implement and after a
+            couple of hours remembering how to code and another couple figuring
+            out how Google Code Jam checks each answer, we had a working
+            solution.
+          </p>
+          <p>
+            Of course, this wouldn’t cut it for all the test sets. The analysis
+            page says as much, this algorithm runs out of time once the words
+            get large enough. As if that wasn't bad enough, the optimal solution
+            has little to do with the brute force solution.
+          </p>
+          <p>
+            It took another six hours or so to write the second algorithm, most
+            of that time was spent writing the wrong algorithm, I had to
+            practically start over a couple of times, but we finally had a
+            solution that should be capable of solving the samples as well as
+            both tests. But somehow, the improved solution was worse than the
+            original. Like a person who hasn’t worked out in a while, my brain
+            had completely depleted its reserve of abstract thoughts. I decided
+            to let it rest and come back to the problem after some days.
+          </p>
+          <h4>Punched Cards</h4>
+          <p>
+            On Monday, April 17 we got together as a team to decide how we would
+            split the work for the week, we decided on an intentionally
+            inefficient strategy: We would split the eight-person team into
+            couples, for each problem each team was assigned a language out of
+            the four we needed to complete the challenge, we would rotate the
+            language for each problem. The goal was that everybody had a chance
+            to get familiar with Dart and Kotlin, the languages no one had any
+            prior experience with.
+          </p>
+          <p>
+            In retrospective that made things harder for everyone. Every problem
+            was essentially “solved” in Python and then rewritten to the other
+            languages. And once we realized that Kotlin, for example, had a
+            Java-like syntax it seemed obvious that those with prior experience
+            with Java would be best suited to port the solutions to the
+            language. Had we realized these things earlier on we might have
+            saved ourselves some trouble, or we might have ended up doing the
+            same since it was the most egalitarian choice. Either way, it was an
+            important lesson.
+          </p>
+          <p>
+            I was partnered up with Karen, and for the first problem she had
+            already written a solution during the weekend, because that file was
+            already on hand it ended up being used to test the GitHub repo that
+            Edgar made to store all our solutions. For many of us this was our
+            first time uploading to someone else’s repository, so that took a
+            bit of trial and error to figure out.
+          </p>
+          <p>
+            Punched Cards ended up giving us no problems, the algorithm was
+            simple enough: Write X lines Y times. With just a bit of extra code
+            to replace the beginning “cell” of the table with dots.
+          </p>
+          <h4>3D Printing</h4>
+          <p>
+            For Tuesday we had to work on the second problem, 3D Printing. It
+            was trickier than Punched Cards but not particularly complicated:
+          </p>
+          <blockquote>
+            You are part of the executive committee of the Database Design Day
+            festivities. You are in charge of promotions and want to print three
+            D's to create a logo of the contest. You can choose any color you
+            want to print them, but all three have to be printed in the same
+            color.
+          </blockquote>
+          <p>
+            We had talked about how to solve it during the meeting on Monday and
+            had devised a greedy solution: On each loop take one unit of ink out
+            of each color until we either run out of ink or we get to the
+            desired units of ink.
+          </p>
+          <p>
+            Because Karen had written the solution to Punched Cards, I decided
+            to start working early on 3D Printing. Our assigned language for
+            this problem was typescript, something neither of us was familiar
+            with. I managed to build the logic for the printers through the day,
+            it was about the same principle as the discussed solution but taking
+            all the ink possible up front and then reducing it until getting to
+            exactly 10^6.
+          </p>
+          <p>
+            The task to handle the input and output of the problem fell on
+            Karen, and that proved to be a challenge on its own since TS alone
+            can't handle input, it required a particular library and a fair bit
+            of trial and error to figure out how to get it to run on GCJ.
+          </p>
+          <h4>D1000000</h4>
+          <p>
+            The third problem turned out to be surprisingly simple, "Longest
+            Straight" type of problems are a staple so I had seen some before.
+            To solve it you start counting at 1 for the first dice and add +1
+            for each dice if the sum is less than the sides of the current dice.
+            The resulting number once you have processed all the dice is the
+            longest straight that can be built using the dice provided by the
+            input.
+          </p>
+          <p>
+            We solved the logic for the problem using Python and then I ported
+            it to Dart. The Google Code Jam compiler has issues with the latest
+            version of Dart, something we confirmed as every team had trouble
+            getting it to run their code. For this problem and this solution, it
+            was seemingly running slower than the same algorithm coded in other
+            languages, and it timed out during the last test set. However, we
+            were able to confirm that it was giving the right answers using the
+            provided test data running locally or on replit. With the two
+            hardest problems still to come we had to move to the next one on the
+            list.
+          </p>
+          <h4>Chain Reactions</h4>
+          <p>
+            Chain Reactions was truly a team effort. Bryan had started to work
+            on it early so he gave us a high-level explanation of the logic
+            necessary to solve the problem. This was later implemented by Adrian
+            and Salma using a special node tree class. To cut down on the code I
+            rewrote that solution to use a dictionary as the node tree instead,
+            so we didn’t need to translate as many lines to Kotlin.
+          </p>
+          <p>
+            The algorithm is a postorder traversal, on each node the algorithm
+            checks the values of each child node, if the lowest value is higher
+            than the value of the current node, replace the value of the current
+            node with the lowest value, any nodes that are left over are
+            appended to a list and summed at the end.
+          </p>
+          <h4>Twisty Little Passages</h4>
+          <p>
+            Twisty Little Passages was the last and most complex problem. In the
+            end we had to settle on a brute force solution: Visit as many rooms
+            as possible, make an average of the passages in each room, multiply
+            that number by the total number of rooms and divide the resulting
+            number by two, as each passage connects two rooms.
+          </p>
+          <h4>Final Thoughts</h4>
+          <p>
+            After the team problems were finished it was time to go back to
+            Double or One Thing. It turned out that the reason why it was
+            returning the wrong answer was because I hadn’t accounted for words
+            that have duplicated letters before going into the algorithm. It was
+            a quick fix, only needing three more lines of code and leaving
+            everything else unchanged.
+          </p>
+          <p>
+            I found the week to be very productive, I brushed up my Python
+            skills, learned more about Typescript and dipped my toes in Dart and
+            Kotlin. I’m looking forward to wrapping up this week and starting
+            the next module.
+          </p>
+          <hr />
+          <small>Uploaded on April 24, 2023</small>
+        </details>
+      </article>
+    </main>
+  </body>
+</html>
