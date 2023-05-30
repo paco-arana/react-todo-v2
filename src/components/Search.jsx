@@ -13,10 +13,16 @@ const Search = ({
   setQPriority,
   qstatus,
   setQStatus,
-  searchTodos,
+  onClickButton,
 }) => {
+  // Used to trigger fetchTodos
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+    onClickButton();
+  };
+
   return (
-    <form onSubmit={searchTodos} className={style.form}>
+    <form onSubmit={(e) => handleButtonClick(e)} className={style.form}>
       <div className="grid grid-cols-4 gap-4">
         <div>
           <input
@@ -35,9 +41,9 @@ const Search = ({
             className={style.input}
             placeholder="All priorities...">
             <option value="">All priorities...</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
           </select>
         </div>
         <div>
@@ -48,12 +54,14 @@ const Search = ({
             className={style.input}
             placeholder="Select priority">
             <option value="">All States...</option>
-            <option value="true">Done</option>
-            <option value="false">Undone</option>
+            <option value="done">Done</option>
+            <option value="undone">Undone</option>
           </select>
         </div>
         <div>
-          <button className={style.button}>🔍 Search</button>
+          <button type="submit" className={style.button}>
+            🔍 Search
+          </button>
         </div>
       </div>
     </form>
