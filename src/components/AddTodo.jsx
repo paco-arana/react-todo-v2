@@ -76,6 +76,7 @@ const AddTodo = ({ onClickButton }) => {
                   className={style.input}
                   type="text"
                   placeholder="Add new..."
+                  maxLength="120"
                 />
               </div>
               <div>
