@@ -134,7 +134,9 @@ function App() {
   return (
     <div className={style.bg}>
       <div className={style.container}>
-        <h1 className={style.heading}>To Do App</h1>
+        <h1 className={style.heading} data-testid="todo-title">
+          To Do App
+        </h1>
         <Search
           qkeywords={qkeywords}
           setQKeywords={setQKeywords}

@@ -41,7 +41,7 @@ const AddTodo = () => {
     <div>
       {showForm ? (
         <div>
-          <div className={style.background}></div>
+          <div className={style.background} data-testid="todo-modal"></div>
           <form onSubmit={createTodo} className={style.form}>
             <div className="grid grid-cols-4 gap-4">
               <div>

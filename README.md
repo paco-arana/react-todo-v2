@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# To Do App Client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## How to run
 
-## Available Scripts
+The client can have issues running with Zscaler active, you can temporarily disable it to run. To keep the file size small the node_module folder has been removed, in order to reinstall it:
 
-In the project directory, you can run:
+```
+npm install
+```
 
-### `npm start`
+From then the client can be run in the 8080 port using:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+There are only two basic unit tests, they can be run using:
 
-### `npm test`
+```
+npm test
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## About <a name="about"></a>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You are working with a client that needs to implement a to do list to help manage their tasks in their daily job. The client asked you to implement the following functionality:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Create a “to do” specifying the name, a priority, and possibly a due date
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Ability to edit name, priority and due date for existing “to do” tasks
 
-### `npm run eject`
+- They want to be able to specify a due date or clear the due date (because they are not interested in when to finish that “to do”).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Be able to filter “to do’s” specifying the name (or part of the name), and the priority, and if they are done/undone.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Be able to sort the “to do’s” by priority and/or due date. For example, be able to sort items where their due date is soon and sort them also by priority to see what tasks are more urgent or less urgent.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Mark “to do’s” as done (clicking in a checkbox) or to undone a “to do”. The undone functionality is just there if there is a mistake :D
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Since it is possible that the client will have a lot of “to do’s” they need to paginate the list of “to do’s”.
 
-## Learn More
+- Ability to know, in average, the time between creation and done for all “to do’s”. This should be shown in general for all done “to do’s” and also grouped by priority. This is important for the client since this is a metric they follow to measure performance.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## UI Requirements
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The UX/UI Team of the client is asking you to conform with the following markup to design the app.
 
-### Code Splitting
+1. Search/Filtering Controls
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+2. New To Do Button. This should open a modal to type the “to do” data.
 
-### Analyzing the Bundle Size
+3. Priority column should show in the header the classic up and down arrows to allow the user to sort.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. Due date column should show in the header the classic up and own arrows to allow the user to sort.
 
-### Making a Progressive Web App
+5. Action column to show actions (links/buttons) to allow the user to delete or edit a “to do”. To Edit is ok to show a modal similar to the one to create a “to do”.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+6. Pagination control. Showing the pages, its number and the next and previous page is enough.
 
-### Advanced Configuration
+7. Area to show the metrics.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Nice to have for the UI
 
-### Deployment
+Show the row with background colors depending on the due date:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- No due date – No background color
 
-### `npm run build` fails to minify
+- One week between due date and today – Red background color
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- 2 weeks between due date and today – Yellow background color
+
+- More that 2 weeks between due date and today – Green background color
+
+Strikethrough fonts for those tasks marked as done
+
+# Front-end Technology
+
+For the front-end project, you have to use:
+
+- JavaScript
+
+- ReactJS
+
+- Up to you to use Redux or React Context
+
+They need at least the following commands to run the project:
+
+- npm run start – To run the front-end application
+
+- npm run tests – To run all tests in the front-end application
+
+Front end project must run in port 8080.
