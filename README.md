@@ -2,7 +2,7 @@
 
 ## How to run
 
-The client can have issues running with Zscaler active, you can temporarily disable it to run. To keep the file size small the node_module folder has been removed, in order to reinstall it:
+To keep the file size small the node_module folder has been removed. In order to reinstall it, open a terminal and run the following command in this folder, where the README.md is located:
 
 ```
 npm install
@@ -19,6 +19,8 @@ There are only two basic unit tests, they can be run using:
 ```
 npm test
 ```
+
+The client can have issues running with Zscaler active, you can temporarily disable it to run.
 
 ---
 
